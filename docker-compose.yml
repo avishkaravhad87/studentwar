@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: nginx:latest
+    container_name: nginx-frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    image: tomcat:9.0
+    container_name: tomcat-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/webapps:/usr/local/tomcat/webapps
+    environment:
+      - DB_HOST=mongodb
+      - DB_PORT=27017
+      - DB_NAME=studentdb
+    depends_on:
+      - database
+    networks:
+      - app-network
+
+  database:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+
+volumes:
+  mongo_data:
+
